@@ -10,4 +10,4 @@
 * `make` downloads IRI code and data files from http://irimodel.org and compiles iri.oct
 
 ## example octave script
-* see [example.m](https://github.com/hcab14/iri-octave/blob/master/example.m)
+* see [iri_test.m](https://github.com/hcab14/iri-octave/blob/master/m/iri_test.m)
