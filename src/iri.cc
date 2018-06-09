@@ -1,7 +1,7 @@
-#include <unistd.h>
-
 #include <octave/oct.h>
 #include <octave/f77-fcn.h>
+
+#include "cwd.hpp"
 
 extern"C" {
   F77_RET_T F77_FUNC(iri_sub, IRI_SUB)
@@ -27,19 +27,9 @@ octave_value getfield(const octave_scalar_map& map, const char* key) {
     error("key '%s' does not exist", key);
   return map.getfield(key);
 }
-
-class cwd {
-public:
-  cwd(const char* nwd) {
-    getcwd(_owd, FILENAME_MAX);
-    chdir(nwd);
-  }
-  ~cwd() {
-    chdir(_owd);
-  }
-private:
-  char _owd[FILENAME_MAX];
-} ;
+octave_value getfield(const octave_scalar_map& map, const char* key, octave_value default_value) {
+  return map.contains(key) ?  map.getfield(key) : default_value;
+}
 
 DEFUN_DLD (iri,
            args,
@@ -58,20 +48,18 @@ DEFUN_DLD (iri,
   const F77_INT             yyyy = getfield(config, "yyyy").int_value();
   const F77_INT             mmdd = getfield(config, "mmdd").int_value();
   const F77_REAL           dhour = getfield(config, "dhour").double_value();
-  const std::string     data_dir = (config.isfield("data_dir")
-                                    ? config.getfield("data_dir").string_value()
-                                    : "data");
+  const std::string     data_dir = getfield(config, "data_dir", "data").string_value();
   const NDArray               ll = args(1).array_value();
   const NDArray              hei = args(2).array_value();
   const F77_REAL alati(ll(0)), along(ll(1));
   const F77_REAL heibeg(hei(0)), heiend(hei(1)), heistp(hei(2));
 
-  Array<F77_REAL> outf(dim_vector(20,1000), -1);
-  Array<F77_REAL> oarr(n>3 ? args(3).float_array_value() : FloatNDArray(dim_vector(1,100),   -1));
-  oarr.resize2(1,100,-1);
+  Array<F77_REAL> outf(dim_vector(20,1000), -1.0f);
+  Array<F77_REAL> oarr(n>3 ? args(3).float_array_value() : FloatNDArray(dim_vector(1,100), -1.0f));
+  oarr.resize2(1,100, -1.0f);
 
   octave::unwind_protect frame;
-  frame.add(new action_container::delete_ptr_elem<cwd>(new cwd(data_dir.c_str())));
+  frame.add(new octave::action_container::delete_ptr_elem<cwd>(new cwd(data_dir.c_str())));
 
   static bool is_initialized = false;
   if (not is_initialized) {
