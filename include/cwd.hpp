@@ -7,12 +7,12 @@
 class cwd {
 public:
   cwd(const char* nwd) {
-    getcwd(_owd, FILENAME_MAX);
+    const char* ignore = getcwd(_owd, FILENAME_MAX);
     sprintf(_nwd, "%s/%s", _owd, nwd);
-    chdir(_nwd);
+    int err = chdir(_nwd);
   }
   ~cwd() {
-    chdir(_owd);
+    int err = chdir(_owd);
   }
 private:
   char _owd[FILENAME_MAX];

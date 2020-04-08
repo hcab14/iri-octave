@@ -26,7 +26,7 @@ octave_value getfield(const octave_scalar_map& map, const char* key, octave_valu
 DEFUN_DLD (igrf_feldc,
            args,
            nargsout,
-           "b=igrf_feldc(config, x); # config -> see iri.cc;"
+           "b=igrf_feldc(config, x); # config -> see iri.cc"
            // " x ... cartesian coordinates in Earth's radii (6371.2km)"
            // " b ... magnetic field strength in Gauss"
            )

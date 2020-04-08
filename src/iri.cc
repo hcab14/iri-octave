@@ -22,13 +22,13 @@ extern"C" {
   F77_RET_T F77_FUNC(readapf107, READAPF107)();
 }
 
+octave_value getfield(const octave_scalar_map& map, const char* key, octave_value default_value) {
+  return map.contains(key) ?  map.getfield(key) : default_value;
+}
 octave_value getfield(const octave_scalar_map& map, const char* key) {
   if (!map.contains(key))
     error("key '%s' does not exist", key);
   return map.getfield(key);
-}
-octave_value getfield(const octave_scalar_map& map, const char* key, octave_value default_value) {
-  return map.contains(key) ?  map.getfield(key) : default_value;
 }
 
 DEFUN_DLD (iri,
